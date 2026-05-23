@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الحسابات - NetZone</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #60a5fa;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #e50914 0%, #c70812 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(229, 9, 20, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .controls input,
+        .controls select {
+            padding: 10px 15px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-family: inherit;
+        }
+
+        .controls input::placeholder {
+            color: rgba(226, 232, 240, 0.5);
+        }
+
+        .table-container {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        th {
+            padding: 15px;
+            text-align: right;
+            font-weight: 600;
+            color: #60a5fa;
+            border-bottom: 2px solid rgba(148, 163, 184, 0.1);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        tbody tr:hover {
+            background: rgba(60, 130, 246, 0.1);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-available {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac;
+        }
+
+        .status-sold {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+
+        .status-expired {
+            background: rgba(107, 114, 128, 0.2);
+            color: #d1d5db;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .btn-edit {
+            background: rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+            border: 1px solid #60a5fa;
+        }
+
+        .btn-edit:hover {
+            background: rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.3);
+            color: #f87171;
+            border: 1px solid #f87171;
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.5);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+            color: #60a5fa;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.2);
+            color: #cbd5e1;
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.3);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: #10b981;
+            color: white;
+            border-radius: 8px;
+            display: none;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        .toast.error {
+            background: #ef4444;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #94a3b8;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #60a5fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📱 إدارة الحسابات</h1>
+            <button class="btn-primary" onclick="openAddModal()">+ إضافة حساب جديد</button>
+        </div>
+
+        <div class="controls">
+            <input type="text" id="searchInput" placeholder="🔍 ابحث عن حساب..." onkeyup="filterAccounts()">
+            <select id="productFilter" onchange="filterAccounts()">
+                <option value="">📦 جميع المنتجات</option>
+            </select>
+            <select id="statusFilter" onchange="filterAccounts()">
+                <option value="">📊 جميع الحالات</option>
+                <option value="available">✅ متاح</option>
+                <option value="sold">💳 مباع</option>
+                <option value="expired">⏰ منتهي</option>
+            </select>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>المنتج</th>
+                        <th>اسم المستخدم</th>
+                        <th>المدة (أيام)</th>
+                        <th>الحالة</th>
+                        <th>تاريخ الانتهاء</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="accountsTable">
+                    <tr class="loading">
+                        <td colspan="6">جاري التحميل...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal" id="accountModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">إضافة حساب جديد</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="accountForm" onsubmit="saveAccount(event)">
+                <div class="form-group">
+                    <label>المنتج *</label>
+                    <select id="productSelect" required onchange="updatePackages()">
+                        <option value="">اختر منتج...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>اسم المستخدم *</label>
+                    <input type="text" id="usernameInput" placeholder="user@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>كلمة المرور *</label>
+                    <input type="password" id="passwordInput" placeholder="••••••••" required>
+                </div>
+                <div class="form-group">
+                    <label>المدة (أيام) *</label>
+                    <input type="number" id="durationInput" placeholder="30" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label>الحالة</label>
+                    <select id="statusSelect">
+                        <option value="available">متاح</option>
+                        <option value="sold">مباع</option>
+                        <option value="expired">منتهي</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>ملاحظات</label>
+                    <textarea id="notesInput" placeholder="أي ملاحظات إضافية..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">إلغاء</button>
+                    <button type="submit" class="btn-primary">حفظ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://anddcufhqiyxubzyynui.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuZGRjdWZocWl5eHVienl5bnVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMDA4NzAsImV4cCI6MjA5NDg3Njg3MH0.YOeKXQGjNji-C4ZQcDbsKcSwmOatVjriqW09H-TBLPI';
+
+        let currentAccountId = null;
+        let accountsData = [];
+        let productsData = [];
+
+        const supabase = {
+            from: (table) => ({
+                select: async (cols = '*', filters = '') => {
+                    try {
+                        const url = `${SUPABASE_URL}/rest/v1/${table}?select=${cols}${filters ? '&' + filters : ''}`;
+                        const res = await fetch(url, {
+                            headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                        });
+                        const data = await res.json();
+                        return { data: res.ok ? data : [], error: res.ok ? null : data };
+                    } catch(e) { return { data: [], error: e }; }
+                },
+                insert: async (rows) => {
+                    try {
+                        const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+                            method: 'POST',
+                            headers: {
+                                'apikey': SUPABASE_ANON_KEY,
+                                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                                'Content-Type': 'application/json',
+                                'Prefer': 'return=representation'
+                            },
+                            body: JSON.stringify(rows)
+                        });
+                        let data = null;
+                        const text = await res.text();
+                        try { data = text ? JSON.parse(text) : null; } catch(e) { data = text; }
+                        if (!res.ok) return { data: null, error: data || `HTTP ${res.status}` };
+                        return { data, error: null };
+                    } catch(e) { return { data: null, error: e.message }; }
+                },
+                update: async (updates, filter) => {
+                    try {
+                        const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${filter}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'apikey': SUPABASE_ANON_KEY,
+                                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(updates)
+                        });
+                        const data = await res.json();
+                        return { data: res.ok ? data : null, error: res.ok ? null : data };
+                    } catch(e) { return { data: null, error: e }; }
+                },
+                delete: async (filter) => {
+                    try {
+                        const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${filter}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'apikey': SUPABASE_ANON_KEY,
+                                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                            }
+                        });
+                        return { error: res.ok ? null : await res.json() };
+                    } catch(e) { return { error: e }; }
+                }
+            })
+        };
+
+        async function loadProducts() {
+            const { data } = await supabase.from('products').select('*', 'is_active=eq.true&order=order_index.asc');
+            productsData = data || [];
+            populateProductSelects();
+            loadAccounts();
+        }
+
+        function populateProductSelects() {
+            const select = document.getElementById('productSelect');
+            const filter = document.getElementById('productFilter');
+            
+            select.innerHTML = '<option value="">اختر منتج...</option>';
+            filter.innerHTML = '<option value="">📦 جميع المنتجات</option>';
+            
+            productsData.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+                filter.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+            });
+        }
+
+        async function loadAccounts() {
+            const { data, error } = await supabase.from('accounts').select(`
+                id, product_id, username, password, duration, status, expiry_date, notes,
+                products(id, name)
+            `, 'order=created_at.desc');
+            
+            if (error) {
+                showToast('خطأ في تحميل البيانات', 'error');
+                return;
+            }
+            
+            accountsData = data || [];
+            displayAccounts(accountsData);
+        }
+
+        function displayAccounts(accounts) {
+            const table = document.getElementById('accountsTable');
+            
+            if (accounts.length === 0) {
+                table.innerHTML = '<tr class="empty-state"><td colspan="6">لا توجد حسابات</td></tr>';
+                return;
+            }
+            
+            table.innerHTML = accounts.map(acc => `
+                <tr>
+                    <td>${acc.products?.name || 'غير محدد'}</td>
+                    <td>${acc.username}</td>
+                    <td>${acc.duration}</td>
+                    <td>
+                        <span class="status-badge status-${acc.status}">
+                            ${acc.status === 'available' ? '✅ متاح' : acc.status === 'sold' ? '💳 مباع' : '⏰ منتهي'}
+                        </span>
+                    </td>
+                    <td>${acc.expiry_date ? new Date(acc.expiry_date).toLocaleDateString('ar-EG') : '-'}</td>
+                    <td>
+                        <div class="actions">
+                            <button class="btn-sm btn-edit" onclick="editAccount('${acc.id}')">تعديل</button>
+                            <button class="btn-sm btn-delete" onclick="deleteAccount('${acc.id}')">حذف</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterAccounts() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const product = document.getElementById('productFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            
+            let filtered = accountsData.filter(acc => {
+                const matchSearch = acc.username.toLowerCase().includes(search);
+                const matchProduct = !product || acc.product_id === product;
+                const matchStatus = !status || acc.status === status;
+                return matchSearch && matchProduct && matchStatus;
+            });
+            
+            displayAccounts(filtered);
+        }
+
+        async function saveAccount(e) {
+            e.preventDefault();
+            
+            const productId = document.getElementById('productSelect').value;
+            const username = document.getElementById('usernameInput').value;
+            const password = document.getElementById('passwordInput').value;
+            const duration = parseInt(document.getElementById('durationInput').value);
+            const status = document.getElementById('statusSelect').value;
+            const notes = document.getElementById('notesInput').value;
+            
+            const expiryDate = new Date();
+            expiryDate.setDate(expiryDate.getDate() + duration);
+            
+            const accountData = {
+                product_id: productId,
+                username,
+                password,
+                duration,
+                status,
+                expiry_date: expiryDate.toISOString(),
+                notes
+            };
+            
+            let result;
+            if (currentAccountId) {
+                result = await supabase.from('accounts').update(accountData, `id=eq.${currentAccountId}`);
+            } else {
+                result = await supabase.from('accounts').insert([accountData]);
+            }
+            
+            if (result.error) {
+                showToast('خطأ في الحفظ', 'error');
+                return;
+            }
+            
+            showToast(currentAccountId ? 'تم التحديث بنجاح' : 'تم الإضافة بنجاح');
+            closeModal();
+            loadAccounts();
+        }
+
+        function openAddModal() {
+            currentAccountId = null;
+            document.getElementById('modalTitle').textContent = 'إضافة حساب جديد';
+            document.getElementById('accountForm').reset();
+            document.getElementById('accountModal').classList.add('active');
+        }
+
+        async function editAccount(id) {
+            const acc = accountsData.find(a => a.id === id);
+            if (!acc) return;
+            
+            currentAccountId = id;
+            document.getElementById('modalTitle').textContent = 'تعديل الحساب';
+            document.getElementById('productSelect').value = acc.product_id;
+            document.getElementById('usernameInput').value = acc.username;
+            document.getElementById('passwordInput').value = acc.password;
+            document.getElementById('durationInput').value = acc.duration;
+            document.getElementById('statusSelect').value = acc.status;
+            document.getElementById('notesInput').value = acc.notes || '';
+            
+            document.getElementById('accountModal').classList.add('active');
+        }
+
+        async function deleteAccount(id) {
+            if (!confirm('هل تريد حذف هذا الحساب؟')) return;
+            
+            const { error } = await supabase.from('accounts').delete(`id=eq.${id}`);
+            
+            if (error) {
+                showToast('خطأ في الحذف', 'error');
+                return;
+            }
+            
+            showToast('تم الحذف بنجاح');
+            loadAccounts();
+        }
+
+        function closeModal() {
+            document.getElementById('accountModal').classList.remove('active');
+            currentAccountId = null;
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = `toast show ${type === 'error' ? 'error' : ''}`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Initialize
+        loadProducts();
+    </script>
+</body>
+</html>
