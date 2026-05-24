@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="pageTitle">جاري التحميل...</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent: #e50914;
+            --bg-dark: #0b0b12;
+            --bg-card: #151520;
+            --bg-input: #1a1a28;
+            --text: #f0f0f5;
+            --text-2: #9999b0;
+            --border: rgba(255,255,255,0.06);
+            --green: #22c55e;
+            --red: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Tajawal', sans-serif; background: var(--bg-dark); color: var(--text); min-height: 100vh; line-height: 1.7; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+        /* LOADING */
+        .loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--bg-dark); z-index: 9999; }
+        .spinner { width: 60px; height: 60px; border: 4px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* HEADER */
+        header { background: rgba(11,11,18,0.95); backdrop-filter: blur(10px); padding: 20px 40px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
+        .nav { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; }
+        .logo { font-family: 'Cairo', sans-serif; font-size: 28px; font-weight: 900; color: var(--accent); }
+        .logo span { color: var(--text); }
+
+        /* HERO */
+        .hero { padding: 80px 20px; text-align: center; background: linear-gradient(135deg, rgba(229,9,20,0.1), transparent); animation: fadeIn 1s; }
+        .hero-product { font-size: 80px; margin-bottom: 20px; animation: slideInUp 0.8s; }
+        .hero-title { font-family: 'Cairo', sans-serif; font-size: clamp(32px, 6vw, 56px); font-weight: 900; margin-bottom: 20px; animation: slideInUp 0.8s 0.1s both; }
+        .hero-title span { color: var(--accent); }
+        .hero-desc { font-size: 18px; color: var(--text-2); max-width: 600px; margin: 0 auto 40px; animation: slideInUp 0.8s 0.2s both; }
+        .hero-btn { display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, var(--accent), #c70812); color: white; border: none; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; animation: slideInUp 0.8s 0.3s both; text-decoration: none; }
+        .hero-btn:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(229,9,20,0.4); }
+
+        /* SECTIONS */
+        section { padding: 80px 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .section-title { font-family: 'Cairo', sans-serif; font-size: clamp(28px, 5vw, 42px); font-weight: 900; text-align: center; margin-bottom: 50px; }
+        .section-title span { color: var(--accent); }
+
+        /* PRICING */
+        .packages { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .package { background: linear-gradient(135deg, var(--bg-card), rgba(21,21,32,0.5)); border: 1px solid var(--border); border-radius: 20px; padding: 40px 30px; text-align: center; transition: all 0.3s; position: relative; animation: slideInUp 0.6s both; }
+        .package:hover { transform: translateY(-10px); border-color: var(--accent); box-shadow: 0 20px 50px rgba(229,9,20,0.2); }
+        .package-popular { border-color: var(--accent); }
+        .package-popular::before { content: '⭐ الأكثر طلباً'; position: absolute; top: -15px; right: 50%; transform: translateX(50%); background: var(--accent); color: white; padding: 6px 20px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .package-name { font-size: 20px; color: var(--text-2); margin-bottom: 10px; }
+        .package-duration { font-size: 14px; color: var(--text-2); margin-bottom: 20px; }
+        .package-price { font-size: 48px; font-weight: 900; color: var(--accent); margin-bottom: 5px; }
+        .package-currency { font-size: 18px; color: var(--text-2); }
+        .package-features { list-style: none; margin: 30px 0; text-align: right; }
+        .package-features li { padding: 10px 0; border-bottom: 1px solid var(--border); color: var(--text-2); }
+        .package-features li::before { content: '✅ '; margin-left: 8px; }
+        .package-btn { width: 100%; padding: 14px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; }
+        .package-btn:hover { background: #c70812; transform: scale(1.05); }
+
+        /* ORDER FORM */
+        .order-form { max-width: 600px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 40px; animation: slideInUp 0.6s; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 8px; color: var(--text-2); font-size: 14px; font-weight: 600; }
+        .form-group input, .form-group select { width: 100%; padding: 14px 16px; background: var(--bg-input); border: 2px solid var(--border); border-radius: 10px; color: var(--text); font-size: 15px; font-family: inherit; transition: all 0.3s; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--accent); }
+        .payment-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        .payment-method { padding: 15px; background: var(--bg-input); border: 2px solid var(--border); border-radius: 10px; text-align: center; cursor: pointer; transition: all 0.3s; }
+        .payment-method:hover { border-color: var(--accent); }
+        .payment-method.selected { border-color: var(--accent); background: rgba(229,9,20,0.1); }
+        .submit-btn { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent), #c70812); color: white; border: none; border-radius: 10px; font-size: 18px; font-weight: 700; cursor: pointer; transition: all 0.3s; margin-top: 20px; }
+        .submit-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(229,9,20,0.3); }
+
+        /* FOOTER */
+        footer { padding: 40px 20px; text-align: center; border-top: 1px solid var(--border); color: var(--text-2); }
+
+        /* TOAST */
+        .toast { position: fixed; bottom: 30px; right: 30px; padding: 16px 24px; background: var(--green); color: white; border-radius: 10px; display: none; z-index: 2000; animation: slideInUp 0.4s; }
+        .toast.show { display: block; }
+        .toast.error { background: var(--red); }
+
+        /* RESPONSIVE */
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
+            .payment-methods { grid-template-columns: 1fr; }
+            header { padding: 15px 20px; }
+            section { padding: 50px 20px; }
+        }
+
+        /* NOT FOUND */
+        .not-found { text-align: center; padding: 100px 20px; }
+        .not-found h1 { font-size: 60px; color: var(--accent); margin-bottom: 20px; }
+        .not-found p { color: var(--text-2); font-size: 18px; }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading"><div class="spinner"></div></div>
+
+    <div id="mainContent" style="display: none;">
+        <header>
+            <nav class="nav">
+                <div class="logo">Net<span>Zone</span></div>
+                <a href="https://hguhdfgh.github.io/Netflix/" style="color: var(--text-2); text-decoration: none;">← الرئيسية</a>
+            </nav>
+        </header>
+
+        <section class="hero">
+            <div class="hero-product" id="heroIcon">📦</div>
+            <h1 class="hero-title">احصل على <span id="heroTitle">المنتج</span></h1>
+            <p class="hero-desc" id="heroDesc">جودة عالية بأسعار لا تُقاوم</p>
+            <a href="#order" class="hero-btn">اطلب الآن 🚀</a>
+        </section>
+
+        <section style="background: var(--bg-card);">
+            <div class="container">
+                <h2 class="section-title">باقاتنا <span>المميزة</span></h2>
+                <div class="packages" id="packagesContainer"></div>
+            </div>
+        </section>
+
+        <section id="order">
+            <div class="container">
+                <h2 class="section-title">أكمل <span>طلبك</span></h2>
+                <form class="order-form" onsubmit="submitOrder(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>الاسم الكامل *</label>
+                            <input type="text" id="customerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>رقم الهاتف *</label>
+                            <input type="tel" id="customerPhone" placeholder="05XXXXXXXX" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>البريد الإلكتروني</label>
+                            <input type="email" id="customerEmail">
+                        </div>
+                        <div class="form-group">
+                            <label>اختر الباقة *</label>
+                            <select id="orderPackage" required>
+                                <option value="">اختر باقة...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>طريقة الدفع *</label>
+                        <div class="payment-methods">
+                            <div class="payment-method" onclick="selectPayment('baridi_mob', this)">📲 Baridi Mob</div>
+                            <div class="payment-method" onclick="selectPayment('ccp', this)">🏦 CCP</div>
+                            <div class="payment-method" onclick="selectPayment('flexy', this)">💰 Flexy</div>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">إرسال الطلب 🚀</button>
+                </form>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 NetZone - جميع الحقوق محفوظة</p>
+        </footer>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://anddcufhqiyxubzyynui.supabase.co';
+        const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuZGRjdWZocWl5eHVienl5bnVpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzMDA4NzAsImV4cCI6MjA5NDg3Njg3MH0.YOeKXQGjNji-C4ZQcDbsKcSwmOatVjriqW09H-TBLPI';
+
+        let currentProduct = null;
+        let selectedPayment = '';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const productSlug = urlParams.get('product');
+
+        async function loadProduct() {
+            if (!productSlug) {
+                showNotFound();
+                return;
+            }
+
+            try {
+                const headers = { 'apikey': KEY, 'Authorization': `Bearer ${KEY}` };
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/products?slug=eq.${productSlug}&is_active=eq.true`, { headers });
+                const products = await res.json();
+
+                if (!products || products.length === 0) {
+                    showNotFound();
+                    return;
+                }
+
+                currentProduct = products[0];
+                renderProduct();
+            } catch (e) {
+                console.error(e);
+                showNotFound();
+            }
+        }
+
+        function renderProduct() {
+            document.getElementById('pageTitle').textContent = `${currentProduct.name} - NetZone`;
+            document.getElementById('heroIcon').textContent = currentProduct.icon || '📦';
+            document.getElementById('heroTitle').textContent = currentProduct.name;
+            document.getElementById('heroDesc').textContent = currentProduct.description || `${currentProduct.name} - أصلي وبأفضل الأسعار`;
+            document.documentElement.style.setProperty('--accent', currentProduct.color || '#e50914');
+
+            const price = currentProduct.price || 1000;
+            const price3M = price * 2;
+
+            const packagesHTML = `
+                <div class="package">
+                    <div class="package-name">باقة شهر واحد</div>
+                    <div class="package-duration">30 يوم</div>
+                    <div class="package-price">${price}<span class="package-currency"> دج</span></div>
+                    <ul class="package-features">
+                        <li>${currentProduct.name} أصلي 100%</li>
+                        <li>جودة عالية</li>
+                        <li>دعم فني كامل</li>
+                        <li>تفعيل فوري</li>
+                    </ul>
+                    <button class="package-btn" onclick="scrollToOrder('1_month')">اختر هذه الباقة</button>
+                </div>
+                <div class="package package-popular">
+                    <div class="package-name">باقة 3 أشهر</div>
+                    <div class="package-duration">90 يوم</div>
+                    <div class="package-price">${price3M}<span class="package-currency"> دج</span></div>
+                    <ul class="package-features">
+                        <li>${currentProduct.name} أصلي 100%</li>
+                        <li>جودة عالية</li>
+                        <li>دعم VIP</li>
+                        <li>وفّر ${price} دج</li>
+                    </ul>
+                    <button class="package-btn" onclick="scrollToOrder('3_months')">اختر هذه الباقة</button>
+                </div>
+            `;
+            document.getElementById('packagesContainer').innerHTML = packagesHTML;
+
+            const select = document.getElementById('orderPackage');
+            select.innerHTML = `
+                <option value="">اختر باقة...</option>
+                <option value="1_month">باقة شهر واحد - ${price} دج</option>
+                <option value="3_months">باقة 3 أشهر - ${price3M} دج</option>
+            `;
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+        }
+
+        function showNotFound() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('mainContent').innerHTML = `
+                <div class="not-found">
+                    <h1>404</h1>
+                    <p>عذراً، المنتج غير موجود أو غير نشط</p>
+                    <a href="https://hguhdfgh.github.io/Netflix/" style="display: inline-block; margin-top: 20px; padding: 12px 30px; background: var(--accent); color: white; border-radius: 10px; text-decoration: none;">العودة للصفحة الرئيسية</a>
+                </div>
+            `;
+        }
+
+        function scrollToOrder(packageType) {
+            document.getElementById('orderPackage').value = packageType;
+            document.getElementById('order').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function selectPayment(method, el) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-method').forEach(p => p.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+
+        async function submitOrder(e) {
+            e.preventDefault();
+
+            if (!selectedPayment) {
+                showToast('⚠️ اختر طريقة الدفع', true);
+                return;
+            }
+
+            const packageType = document.getElementById('orderPackage').value;
+            if (!packageType) {
+                showToast('⚠️ اختر باقة', true);
+                return;
+            }
+
+            const price = packageType === '1_month' ? (currentProduct.price || 1000) : (currentProduct.price || 1000) * 2;
+
+            const data = {
+                customer_name: document.getElementById('customerName').value,
+                phone: document.getElementById('customerPhone').value,
+                email: document.getElementById('customerEmail').value || null,
+                product_id: currentProduct.id,
+                package_type: `${currentProduct.name} - ${packageType === '1_month' ? 'شهر' : '3 أشهر'}`,
+                payment_method: selectedPayment,
+                price: price,
+                status: 'pending'
+            };
+
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/orders`, {
+                    method: 'POST',
+                    headers: { 'apikey': KEY, 'Authorization': `Bearer ${KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    const err = await response.text();
+                    showToast(`❌ خطأ: ${err}`, true);
+                    return;
+                }
+
+                showToast('✅ تم إرسال طلبك بنجاح! سنتواصل معك قريباً');
+                document.querySelector('.order-form').reset();
+                selectedPayment = '';
+                document.querySelectorAll('.payment-method').forEach(p => p.classList.remove('selected'));
+            } catch (e) {
+                showToast(`❌ ${e.message}`, true);
+            }
+        }
+
+        function showToast(msg, error = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.className = error ? 'toast show error' : 'toast show';
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+
+        loadProduct();
+    </script>
+</body>
+</html>
